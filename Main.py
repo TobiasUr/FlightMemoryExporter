@@ -5,15 +5,16 @@ import pandas as pd
 from PIL import Image
 import numpy as np
 import xlwt
+import csv
+import openpyxl
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Users\Tobia\AppData\Local\Tesseract-OCR\tesseract.exe'
 
 img= cv2.imread("TEST.png")
 imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-
-wb = xlwt.Workbook()
-ws = wb.add_sheet('Main')
+wb = openpyxl.Workbook()
+ws = wb.worksheets[0]
 
 
 
@@ -33,19 +34,47 @@ resolution = np.array([w, h])
 
 def readText(cropStart: float, cropEnd: float, outputName:str):
     vertices = np.array([[resolution[0]/cropStart, 0],[resolution[0]/cropEnd, 0], [resolution[0]/cropEnd, resolution[1]], [resolution[0]/cropStart, resolution[1]]], np.int32)
-    imgCropped =ROI(imgGray, [vertices])
+    #imgCropped =ROI(imgGray, [vertices])
 
+    y1 = 0
+    y2 = int(resolution[1])
+    x1= int(resolution[0]/cropStart)
+    x2= int(resolution[0]/cropEnd)
+    imgCropped = imgGray[y1:y2, x1:x2]
     flt = cv2.adaptiveThreshold(imgCropped,
                             100, cv2.ADAPTIVE_THRESH_MEAN_C,
-                            cv2.THRESH_BINARY, 15, 16)
+                           cv2.THRESH_BINARY, 15, 16,
+                           )
 
+    scale_percent = 150 # percent of original size
+    width = int(imgCropped.shape[1] * scale_percent / 100)
+    height = int(imgCropped.shape[0] * scale_percent / 100)
+    dim = (width, height)
+      
+    flt = cv2.resize(flt, dim, interpolation = cv2.INTER_AREA)
 
-    config = ('-l eng — oem 1 — psm 3')
+    
+    
+    
+
+    flt = imgCropped
+
+    config = ('-l eng — oem 1 — -psm 6')
 
     text = pytesseract.image_to_string(flt, config=config)
 
     with open(outputName, 'w') as f:
         f.write(text)
+
+    inputFile = outputName
+    outputFile = outputName.replace(".txt", ".csv")
+
+    with open(inputFile, 'r') as data:
+        reader = csv.reader(data, delimiter='\t')
+        for row in reader:
+            ws.append(row)
+            
+    wb.save(outputFile)
 
     #cv2.imshow('window', flt)
     #cv2.waitKey()
@@ -69,16 +98,4 @@ readText(1.45, 1.189, '9.txt')
 readText(1.189, 1.08, '10.txt')
 
 
-def excel(file, column):
-    f = open(file, 'r+')
 
-    data = f.readlines() # read all lines at once
-    for i in range(len(data)):
-        row = data[i].split()  # This will return a line of string data, you may need to convert to other formats depending on your use case
-    for j in range(len(row)):
-        ws.write(i, j, row[j])  # Write to cell i, j
-    f.close()
-
-excel('1.txt', 0)
-
-wb.save('Excelfile' + '.xls')
