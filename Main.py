@@ -147,6 +147,7 @@ def run(Account, Password, Directory):
     wb.save((Directory +'\Flights.xlsx'))
     pb['value'] = 100
     root.update_idletasks()
+    popupmsg('finished')
     print('finished')
         
 def OK():
