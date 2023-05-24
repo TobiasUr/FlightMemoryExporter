@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-import pandas as pd
 import openpyxl
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -9,6 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog
 import threading
 root = tk.Tk()
 
@@ -18,10 +18,20 @@ eUsername.grid(row = 0, column = 1)
 tk.Label(root, text='Password:').grid(row = 1, column=0)
 ePassword = tk.Entry(root, width=15, borderwidth=2, show='*')
 ePassword.grid(row = 1, column = 1)
-pb = ttk.Progressbar(orient='horizontal', length=15, mode='indeterminate')
+pb = ttk.Progressbar(orient='horizontal', length=100, mode='determinate')
 pb.grid(row = 3, column = 1)
+directory = './'    
 
-def run(Account, Password):
+def popupmsg(msg):
+    popup = tk.Tk()
+    popup.wm_title("!")
+    label = ttk.Label(popup, text=msg)
+    label.pack(side="top", fill="x", pady=10)
+    B1 = ttk.Button(popup, text="Okay", command = popup.destroy)
+    B1.pack()
+    popup.mainloop()
+
+def run(Account, Password, Directory):
     print('begin')
     Chromdriver = 'chromedriver.exe'
     chrome_options = Options()
@@ -29,7 +39,8 @@ def run(Account, Password):
     chrome_options.add_argument("start-maximized")
     chrome_options.add_argument("--disable-blink-features")
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-
+    pb['value'] = 20
+    root.update_idletasks()
 
     #login info
     LOGIN_PAGE = "https://www.flightmemory.com/"
@@ -41,20 +52,28 @@ def run(Account, Password):
 
     #login
     driver.get(LOGIN_PAGE)
-    wait = WebDriverWait(driver, 30)
+    wait = WebDriverWait(driver, 5)
     wait.until(EC.element_to_be_clickable((By.NAME, "username"))).send_keys(ACCOUNT)
     print('enteredName')
     wait.until(EC.element_to_be_clickable((By.NAME, "passwort"))).send_keys(PASSWORD)
     print('enteredPassword')
     wait.until(EC.element_to_be_clickable((By.XPATH, ".//input[@value='SignIn' and @type='submit']"))).click()
-    print("Logged in")
+    print("EnteredCredentials")
+    pb['value'] = 40
+    root.update_idletasks()
     #go to flights
 
-    wait.until(EC.element_to_be_clickable((By.XPATH, "//*[contains(text(), 'FLIGHTDATA')]"))).click()
-    print('found flightdata')
+    try:
+        wait.until(EC.element_to_be_clickable((By.XPATH, "//*[contains(text(), 'FLIGHTDATA')]"))).click()      
+    except TimeoutException:
+        popupmsg('wrong credentials')
+        return
+    
+    print('found flightdata')    
     pages = []
     pages.append(driver.execute_script("return document.documentElement.outerHTML"))
-
+    pb['value'] = 60
+    root.update_idletasks()
 
     while True:
         try:
@@ -64,7 +83,8 @@ def run(Account, Password):
             print("Pages Found:")
             print(int(len(pages)))
             break
-
+    pb['value'] = 90
+    root.update_idletasks()
 
     #Create workbook object
     wb = openpyxl.Workbook()
@@ -124,16 +144,20 @@ def run(Account, Password):
             print(idx)    
         lastidx = idx
 
-    wb.save('Flights.xlsx')
-    pb.end()
+    wb.save((Directory +'\Flights.xlsx'))
+    pb['value'] = 100
+    root.update_idletasks()
     print('finished')
         
 def OK():
+    directory = filedialog.askdirectory()
+    print(directory)
     account = eUsername.get()
     password = ePassword.get()
-    x = threading.Thread(target=run, args=(account, password))
+    x = threading.Thread(target=run, args=(account, password, directory))
     x.start()
-    pb.start()
+    pb['value'] = 0
+    root.update_idletasks()
 
 #GUI
 
