@@ -18,8 +18,8 @@ eUsername.grid(row = 0, column = 1)
 tk.Label(root, text='Password:').grid(row = 1, column=0)
 ePassword = tk.Entry(root, width=15, borderwidth=2, show='*')
 ePassword.grid(row = 1, column = 1)
-pb = ttk.Progressbar(orient='horizontal', length=15, mode='indeterminate').grid(row=3, column = 1)
-
+pb = ttk.Progressbar(orient='horizontal', length=15, mode='indeterminate')
+pb.grid(row = 3, column = 1)
 
 def run(Account, Password):
     print('begin')
@@ -125,6 +125,7 @@ def run(Account, Password):
         lastidx = idx
 
     wb.save('Flights.xlsx')
+    pb.end()
     print('finished')
         
 def OK():
@@ -132,7 +133,7 @@ def OK():
     password = ePassword.get()
     x = threading.Thread(target=run, args=(account, password))
     x.start()
-    pb.start(20)
+    pb.start()
 
 #GUI
 
