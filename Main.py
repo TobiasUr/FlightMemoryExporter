@@ -33,7 +33,7 @@ def popupmsg(msg):
 
 def run(Account, Password, Directory):
     print('begin')
-    Chromdriver = 'chromedriver.exe'
+    Chromdriver = 'chromedriver\chromedriver.exe'
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("start-maximized")
@@ -131,6 +131,8 @@ def run(Account, Password, Directory):
                 Airline_Flightinfo = tr.find_all('td')[10]
                 Airplane = tr.find_all('td')[11]
                 Seat = tr.find_all('td')[12]
+                #edit time formating
+                #'-'.join([date_dep_arr[i:i+10] for i in range(0, len(date_dep_arr), 3)])
                 #addInfoToSheet
                 sheet.cell(row = idx, column = 1).value=flight_number.get_text()
                 sheet.cell(row = idx, column = 2).value=date_dep_arr.get_text()
@@ -143,13 +145,17 @@ def run(Account, Password, Directory):
                 sheet.cell(row = idx, column = 9).value=Seat.get_text()
             print(idx)    
         lastidx = idx
-
+    #remove empty rows
+    for row in range(sheet.max_row+1, 1, -1):  #range is from bottom to top, step -1 
+        if sheet[row][1].value is None:
+            sheet.delete_rows(idx=row, amount = 1)
+    #Save file + popup
     wb.save((Directory +'\Flights.xlsx'))
     pb['value'] = 100
     root.update_idletasks()
     popupmsg('finished')
     print('finished')
-        
+#OnButtonPress        
 def OK():
     directory = filedialog.askdirectory()
     print(directory)
