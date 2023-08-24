@@ -48,14 +48,15 @@ def getSeatInfo(InfoType, data):
         else:
             return('0')
     elif InfoType == 2:
-        if 'Economy' in data:
+        if 'EconomyPlus' in data:
+            return('4')
+        elif 'Economy' in data:
             return('1')
         elif 'Business' in data:
             return('2')
         elif 'First' in data:
             return('3')
-        elif 'EconomyPlus' in data:
-            return('4')
+        
         else:
             return('0')
     elif InfoType == 3:
