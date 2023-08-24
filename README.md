@@ -11,4 +11,6 @@ Just enter your name and password and wait. Now you should see your flights in "
 
 <a href="https://github.com/TobiasUr/FlightMemoryExporter/releases/latest">Latest release here!</a>
 
+For importing to MyFlightRadar look <a href="https://github.com/TobiasUr/FlightMemoryExporter/wiki/From-Flight-memory-to-MyFlightRadar">here!</a>
+
 For compiling from source click <a href="https://github.com/TobiasUr/FlightMemoryExporter/wiki/Compiling-from-code">here!</a> 
