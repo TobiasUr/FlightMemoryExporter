@@ -7,6 +7,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service as ChromeService
+
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
@@ -40,31 +42,31 @@ def getSeatInfo(InfoType, data):
     data = data.get_text()
     if InfoType == 1:
         if 'Window' in data:
-            return('1')
+            return('Window') #1
         elif 'Middle' in data:
-            return('2')
+            return('Middle') #2
         elif 'Aisle' in data:
-            return('3')
+            return('Aisle') #3
         else:
-            return('0')
+            return(' ') #0
     elif InfoType == 2:
         if 'EconomyPlus' in data:
-            return('4')
+            return('Economy Plus') #4
         elif 'Economy' in data:
-            return('1')
+            return('Economy') #1
         elif 'Business' in data:
-            return('2')
+            return('Business') #2
         elif 'First' in data:
-            return('3')
+            return('First') #3
         
         else:
             return('0')
     elif InfoType == 3:
         if 'Personal' in data:
-            return('1')
+            return('Personal') #1
         else:
             #need to learn other type numbers 
-            return('0')
+            return(' ') #0
 
     
 
@@ -97,7 +99,8 @@ def run(Account, Password, Directory):
     PASSWORD = Password
 
     #driver = webdriver.Chrome(executable_path=Chromdriver, chrome_options=chrome_options)
-    driver = webdriver.Chrome(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+
 
     #login
     driver.get(LOGIN_PAGE)
@@ -227,7 +230,7 @@ def run(Account, Password, Directory):
                 sheet.cell(row = idx, column = 3).value=Departure.get_text()
                 sheet.cell(row = idx, column = 4).value=Arrival.get_text()
                 sheet.cell(row = idx, column = 5).value=date_dep_arr.get_text()[11:15]
-                sheet.cell(row = idx, column = 6).value=date_dep_arr.get_text()[16:20]
+                sheet.cell(row = idx, column = 6).value=date_dep_arr.get_text()[15:20]
                 sheet.cell(row = idx, column = 7).value=FlightTime.get_text()
                 sheet.cell(row = idx, column = 8).value=getinfo(Airline_Flightinfo, 0)
                 sheet.cell(row = idx, column = 9).value=getinfo(Airplane, 0)
