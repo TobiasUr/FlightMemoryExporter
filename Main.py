@@ -229,7 +229,7 @@ def run(Account, Password, Directory):
                 sheet.cell(row = idx, column = 2).value=getinfo(Airline_Flightinfo, 1)
                 sheet.cell(row = idx, column = 3).value=Departure.get_text()
                 sheet.cell(row = idx, column = 4).value=Arrival.get_text()
-                sheet.cell(row = idx, column = 5).value=date_dep_arr.get_text()[11:15]
+                sheet.cell(row = idx, column = 5).value=date_dep_arr.get_text()[10:15]
                 sheet.cell(row = idx, column = 6).value=date_dep_arr.get_text()[15:20]
                 sheet.cell(row = idx, column = 7).value=FlightTime.get_text()
                 sheet.cell(row = idx, column = 8).value=getinfo(Airline_Flightinfo, 0)
