@@ -18,15 +18,15 @@ import chromedriver_autoinstaller
 #Button press ####################################################################################################
 
 def OK():
-    saveDir = filedialog.askdirectory()
+    saveFile = filedialog.asksaveasfilename(parent=root, initialfile="Flights.xlsx", defaultextension=".xlsx", confirmoverwrite=True)
     account = eUsername.get()
     password = ePassword.get()
-    mainThread = threading.Thread(target=run, args=(account, password, saveDir))
+    mainThread = threading.Thread(target=run, args=(account, password, saveFile))
     mainThread.run()
 
 #Run###############################################################################################################
-def run(account, password, saveDir):
-    print(f"Directory chosen:{saveDir}")
+def run(account, password, saveFile):
+    print(f"Destination file: {saveFile}")
     #Driver Setup
     chromedriver_autoinstaller.install()
     print('chromedriver installed')
@@ -73,6 +73,8 @@ def run(account, password, saveDir):
         except TimeoutException:
             print(f"Pages Found:{int(len(pages))}")
             break
+
+    driver.close()
 
     #update progressbar
     pb['value'] = 90
@@ -160,10 +162,10 @@ def run(account, password, saveDir):
         if sheet[row][1].value is None:
             sheet.delete_rows(idx=row, amount=1)
     # Save file + popup
-    wb.save((saveDir + '\Flights.xlsx'))
+    wb.save(saveFile)
     pb['value'] = 100
     root.update_idletasks()
-    popupmsg('finished')
+    popupmsg('Finished')
     print('finished')
 #GeiInfo separated by br##########################################################################################
 def getinfo(data, index):
@@ -209,7 +211,7 @@ def getSeatInfo(InfoType, data):
 #PopUp############################################################################################################
 def popupmsg(msg):
     popup = tkinter.Tk()
-    popup.wm_title("!")
+    popup.wm_title("FlightMemoryExporter")
     label = ttk.Label(popup, text=msg)
     label.pack(side="top", fill="x", pady=10)
     B1 = ttk.Button(popup, text="Okay", command = popup.destroy)
@@ -218,6 +220,7 @@ def popupmsg(msg):
 
 #GUI###############################################################################################################
 root = tkinter.Tk()
+root.wm_title('FlightMemoryExporter')
 
 #UsernameInput
 tkinter.Label(root, text='Username:').grid(row = 0, column = 0)
