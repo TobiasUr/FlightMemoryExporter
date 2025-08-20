@@ -230,6 +230,7 @@ eUsername.grid(row = 0, column = 1)
 tkinter.Label(root, text='Password:').grid(row = 1, column=0)
 ePassword = tkinter.Entry(root, width=15, borderwidth=2, show='*')
 ePassword.grid(row = 1, column = 1)
+ePassword.bind('<Return>', lambda event: OK())  # Bind Enter key to OK function
 #progressbar
 pb = ttk.Progressbar(orient='horizontal', length=100, mode='determinate')
 pb.grid(row = 3, column = 1)
