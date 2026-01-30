@@ -139,7 +139,8 @@ def run(account, password, saveFile):
                 # addInfoToSheetMyFlightRadar
                 date = date_dep_arr.get_text()[0:10]
                 date = date.replace('.', '/')
-                sheet.cell(row=idx, column=1).value = date
+                date_formatted = date[6:]+"/"+date[3:5] +"/"+date[:2]
+                sheet.cell(row=idx, column=1).value = date_formatted
                 sheet.cell(row=idx, column=2).value = getinfo(Airline_Flightinfo, 1)
                 sheet.cell(row=idx, column=3).value = Departure.get_text()
                 sheet.cell(row=idx, column=4).value = Arrival.get_text()
@@ -214,7 +215,7 @@ def popupmsg(msg):
     popup.wm_title("FlightMemoryExporter")
     label = ttk.Label(popup, text=msg)
     label.pack(side="top", fill="x", pady=10)
-    B1 = ttk.Button(popup, text="Okay", command = popup.destroy)
+    B1 = ttk.Button(popup, text="OK", command = popup.destroy)
     B1.pack()
     popup.mainloop()
 
