@@ -1,3 +1,5 @@
+import re
+
 from bs4 import BeautifulSoup
 import openpyxl
 
@@ -142,8 +144,8 @@ def run(account, password, saveFile):
                 date_formatted = date[6:]+"/"+date[3:5] +"/"+date[:2]
                 sheet.cell(row=idx, column=1).value = date_formatted
                 sheet.cell(row=idx, column=2).value = getinfo(Airline_Flightinfo, 1)
-                sheet.cell(row=idx, column=3).value = Departure.get_text()
-                sheet.cell(row=idx, column=4).value = Arrival.get_text()
+                sheet.cell(row=idx, column=3).value = get_cell_text(Departure)
+                sheet.cell(row=idx, column=4).value = get_cell_text(Arrival)
                 sheet.cell(row=idx, column=5).value = date_dep_arr.get_text()[10:15]
                 sheet.cell(row=idx, column=6).value = date_dep_arr.get_text()[15:20]
                 sheet.cell(row=idx, column=7).value = FlightTime.get_text()
@@ -154,6 +156,10 @@ def run(account, password, saveFile):
                 sheet.cell(row=idx, column=12).value = getSeatInfo(1, Seat)
                 sheet.cell(row=idx, column=13).value = getSeatInfo(2, Seat)
                 sheet.cell(row=idx, column=14).value = getSeatInfo(3, Seat)
+                sheet.cell(row=idx, column=16).value = extract_identifier(Departure)
+                sheet.cell(row=idx, column=17).value = extract_identifier(Arrival)
+                sheet.cell(row=idx, column=18).value = extract_identifier(Airline_Flightinfo)
+                sheet.cell(row=idx, column=19).value = extract_identifier(Airplane)
 
             print(idx)
         lastidx = idx
@@ -179,6 +185,21 @@ def getinfo(data, index):
     else:
         text = datatextarray[index]
         return text
+
+def get_cell_text(data):
+    return data.get_text(separator=' ', strip=True)
+
+def extract_identifier(data):
+    for link in data.find_all('a'):
+        href = link.get('href', '')
+        matches = re.findall(r'/([A-Za-z0-9_-]+)$', href)
+        if matches:
+            return matches[0]
+    cell_text = get_cell_text(data).upper()
+    if len(cell_text) <= 6 and cell_text.replace('-', '').isalnum():
+        return cell_text
+    return ''
+
 #Get seat info #########################################################################################################
 def getSeatInfo(InfoType, data):
     data = data.get_text()
@@ -202,7 +223,7 @@ def getSeatInfo(InfoType, data):
             return ('First')  # 3
 
         else:
-            return ('0')
+            return ('')
     elif InfoType == 3:
         if 'Personal' in data:
             return ('Personal')  # 1
